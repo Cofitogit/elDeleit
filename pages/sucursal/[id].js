@@ -12,7 +12,13 @@ export default function suc() {
   const [isSelectedM, setIsSelectedM] = useState(false);
   const [isSelectedT, setIsSelectedT] = useState(false);
   const [kilos, setKilos] = useState('');
-  let detalle = [kilos,'Kg de pan']
+  let detalle = [kilos, 'Kg de pan'];
+
+  let pantalla = false;
+
+  if (kilos !== '') {
+    pantalla = true;
+  }
 
   function handleD(e) {
     e.preventDefault();
@@ -49,9 +55,37 @@ export default function suc() {
 
   function agregarValor(e) {
     e.preventDefault();
+    if (kilos.length > 1) {
+      return;
+    }
     setKilos(kilos + e.target.value);
   }
-  
+
+  function agregarValorExtra(e) {
+    e.preventDefault();
+    if (detalle.find((c) => c === e.target.value)) {
+        return;
+    }
+    detalle.push(e.target.value);
+    console.log(detalle)
+  }
+
+  function del(e) {
+    e.preventDefault();
+    setKilos('');
+    detalle.slice(0,1);
+  }
+
+  let vPan = ''
+
+  function valorPantalla() {
+    detalle.map((d) => {
+        vPan = vPan + d
+        return vPan;
+    })
+  }
+
+  valorPantalla();
 
   return (
     <Layout>
@@ -89,7 +123,7 @@ export default function suc() {
       </div>
       <div
         className='bg-dark mx-auto mt-2 border border-success border-2'
-        style={{ height: '290px', width: '250px' }}
+        style={{ height: '290px', width: '300px' }}
       >
         <div
           className='display-absolute bg-success'
@@ -99,31 +133,103 @@ export default function suc() {
             display: visibleD ? 'block' : 'none',
           }}
         >
-          <div className='card-body w-100 bg-dark' style={{ height: '45px' }}>
+          <div
+            className='card-body w-100 bg-dark d-flex justify-content-between'
+            style={{ height: '45px' }}
+          >
             <h5 className='text-light ms-1 pt-2 fw-lighter'>
-              {`${detalle[0]} ${detalle[1]}`}
+              {pantalla ? vPan : ''}
             </h5>
+            <button onClick={del} className='btn btn-dark my-1'>
+              <i className='bi bi-arrow-left'></i>
+            </button>
           </div>
           <div className='container'>
             <div className='row mt-1'>
               <div className='bg-success d-grid justify-content-center w-25'>
-                <button onClick={agregarValor} value='1' className='btn btn-dark rounded m-1'>1</button>
-                <button onClick={agregarValor} value='2' className='btn btn-dark rounded m-1'>2</button>
-                <button onClick={agregarValor} value='3' className='btn btn-dark rounded m-1'>3</button>
-                <button onClick={agregarValor} value='4' className='btn btn-dark rounded m-1'>4</button>
-                <button onClick={agregarValor} value='5' className='btn btn-dark rounded m-1'>5</button>
+                <button
+                  onClick={agregarValor}
+                  value='1'
+                  className='btn btn-dark rounded m-1'
+                >
+                  1
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='2'
+                  className='btn btn-dark rounded m-1'
+                >
+                  2
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='3'
+                  className='btn btn-dark rounded m-1'
+                >
+                  3
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='4'
+                  className='btn btn-dark rounded m-1'
+                >
+                  4
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='5'
+                  className='btn btn-dark rounded m-1'
+                >
+                  5
+                </button>
               </div>
               <div className='bg-dark w-50 d-grid'>
-                <button value='R' className='btn btn-sm btn-success mt-1'>R</button>
-                <button value='C' className='btn btn-sm btn-success my-2'>C</button>
-                <button value='F' className='btn btn-sm btn-success mb-1'>F</button>
+                <button value='R' onClick={agregarValorExtra} className='btn btn-sm btn-success mt-1'>
+                  R
+                </button>
+                <button value='C' onClick={agregarValorExtra} className='btn btn-sm btn-success my-2'>
+                  C
+                </button>
+                <button value='F' onClick={agregarValorExtra} className='btn btn-sm btn-success mb-1'>
+                  F
+                </button>
               </div>
               <div className='bg-success d-grid justify-content-center w-25'>
-                <button onClick={agregarValor} value='6' className='btn btn-dark rounded m-1'>6</button>
-                <button onClick={agregarValor} value='7' className='btn btn-dark rounded m-1'>7</button>
-                <button onClick={agregarValor} value='8' className='btn btn-dark rounded m-1'>8</button>
-                <button onClick={agregarValor} value='9' className='btn btn-dark rounded m-1'>9</button>
-                <button onClick={agregarValor} value='0' className='btn btn-dark rounded m-1'>0</button>
+                <button
+                  onClick={agregarValor}
+                  value='6'
+                  className='btn btn-dark rounded m-1'
+                >
+                  6
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='7'
+                  className='btn btn-dark rounded m-1'
+                >
+                  7
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='8'
+                  className='btn btn-dark rounded m-1'
+                >
+                  8
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='9'
+                  className='btn btn-dark rounded m-1'
+                >
+                  9
+                </button>
+                <button
+                  onClick={agregarValor}
+                  value='0'
+                  className='btn btn-dark rounded m-1'
+                >
+                  0
+                </button>
               </div>
             </div>
           </div>
