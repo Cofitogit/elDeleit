@@ -1,0 +1,13 @@
+.animacion-escalar {
+    transform: scale(0.2);
+    animation: escalar 0.3s ease forwards;
+  }
+  
+  @keyframes escalar {
+    from {
+      transform: scale(0.2);
+    }
+    to {
+      transform: scale(1);
+    }
+  }

@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
@@ -13,6 +14,9 @@ export default function suc() {
   const [vPan, setvPan] = useState('');
   const [detalle, setDetalle] = useState(['', 'Kg de pan']);
   const [inputValor, setInputValor] = useState('$');
+  const [ticketIncomplete, setTicketIncomplete] = useState([]);
+  const [ticketSave, setTicketSave] = useState(false);
+  const [ticketUnsave, setTicketUnsave] = useState(false);
 
   let pantalla = false;
 
@@ -74,7 +78,7 @@ export default function suc() {
   }
 
   function agregarValorI(e) {
-    if(inputValor.length > 5) {
+    if (inputValor.length > 5) {
       return;
     }
     setInputValor(inputValor + e.target.value);
@@ -111,6 +115,29 @@ export default function suc() {
     setFecha(`${diaNuevo}/${mesNuevo}/${anioNuevo}`);
     setDia(diaNuevo);
   };
+
+  function enviarTicket() {
+    let vacio = [];
+
+    if (detalle[0] === '') {
+      vacio.push('Rellenar la pestaña DETALLE');
+    }
+
+    if (selectedButton === '') {
+      vacio.push('Seleccionar un turno');
+    }
+
+    if (inputValor === '$') {
+      vacio.push('Rellenar la pestaña IMPORTE');
+    }
+
+    if (vacio.length > 0) {
+      setTicketIncomplete(vacio);
+      return setTicketUnsave(true);
+    } else {
+      return setTicketSave(true);
+    }
+  }
 
   return (
     <Layout>
@@ -299,26 +326,26 @@ export default function suc() {
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='2'
+                value='4'
                 onClick={agregarValorI}
               >
-                2
+                4
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='3'
+                value='7'
                 onClick={agregarValorI}
               >
-                3
+                7
               </button>
             </div>
             <div className='mt-2'>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='4'
+                value='2'
                 onClick={agregarValorI}
               >
-                4
+                2
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
@@ -329,26 +356,26 @@ export default function suc() {
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='6'
+                value='8'
                 onClick={agregarValorI}
               >
-                6
+                8
               </button>
             </div>
             <div className='mt-2'>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='7'
+                value='3'
                 onClick={agregarValorI}
               >
-                7
+                3
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
-                value='8'
+                value='6'
                 onClick={agregarValorI}
               >
-                8
+                6
               </button>
               <button
                 className='btn btn-dark rounded w-100 my-2'
@@ -397,16 +424,81 @@ export default function suc() {
               </div>
             </div>
           </div>
+          <div
+            className='position-absolute'
+            style={{
+              background: 'rgb(0, 54, 5)',
+              top: '40%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              display: ticketUnsave ? 'block' : 'none',
+              zIndex: 2,
+              width: '100%'
+            }}
+          >
+            <div
+              className='card-body border border-danger rounded animacion-escalar'
+              style={{ background: 'rgb(61, 0, 0)' }}
+            >
+              <h5 className='text-center text-light p-2 fw-lighter my-auto'>
+                <ul className='mt-1'>
+                  {ticketIncomplete.map((d) => (
+                    <li key={d}>{d}</li>
+                  ))}
+                </ul>
+              </h5>
+              <div className="d-flex justify-content-center mb-2">
+                <button onClick={() => setTicketUnsave(false)} className='btn btn-outline-danger'>X</button>
+              </div>
+            </div>
+          </div>
+          <div
+            className='position-absolute'
+            style={{
+              top: '0',
+              left: '0',
+              width: '100%',
+              height: '100%',
+              zIndex: 2,
+              background: 'rgba(0, 0, 0, 0.5)',
+              backdropFilter: 'blur(5px)',
+              display: ticketSave ? 'block' : 'none',
+            }}
+          >
+            <div
+              className='card-body border border-success rounded animacion-escalar'
+              style={{ margin: '60% 20px', background: 'rgb(0, 54, 5)' }}
+            >
+              <h3 className='text-center text-light p-2 fw-lighter'>
+                TICKET GUARDADO
+              </h3>
+              <div className='d-flex justify-content-center'>
+                <Link href={'/'} className='text-decoration-none'>
+                  <button className='btn btn-success mb-2 text-light'>
+                    nuevo ticket
+                  </button>
+                </Link>
+              </div>
+            </div>
+          </div>
           <div className='card-body bg-dark border-bottom border-top border-light rounded mx-3 mt-1'>
             <h3 className='text-light text-center ms-1 pt-2 fw-lighter'>
               Detalles del TICKET:
             </h3>
             <h3 className='text-light text-center ms-1'>
-              {detalle.join(' ') + ' ' + inputValor + ' ' + fecha + ' ' + selectedButton}
+              {detalle.join(' ') +
+                ' ' +
+                inputValor +
+                ' ' +
+                fecha +
+                ' ' +
+                selectedButton}
             </h3>
           </div>
           <div className='d-flex justify-content-center mt-2'>
-            <button className='btn btn-success'>GUARDAR</button>
+            <button onClick={enviarTicket} className='btn btn-success'>
+              GUARDAR
+            </button>
           </div>
         </div>
       </div>
