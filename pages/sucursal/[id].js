@@ -425,9 +425,8 @@ export default function suc() {
             </div>
           </div>
           <div
-            className='position-absolute'
+            className='position-fixed'
             style={{
-              background: 'rgb(0, 54, 5)',
               top: '40%',
               left: '50%',
               transform: 'translate(-50%, -50%)',

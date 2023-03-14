@@ -8,7 +8,7 @@ export default function Sucursales() {
       {sucursal.map((s) => {
         let id = 0;
         switch (s) {
-            case 'Pueblo Mío':
+            case 'Pueblo mio':
                 id = 0;
                 break;
             case 'Prado':
