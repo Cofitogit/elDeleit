@@ -1,5 +1,5 @@
 import { useRouter } from 'next/router';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import { sucursal } from '../../data';
 
@@ -11,12 +11,12 @@ export default function suc() {
   const [visibleF, setVisibleF] = useState(false);
   const [isSelectedM, setIsSelectedM] = useState(false);
   const [isSelectedT, setIsSelectedT] = useState(false);
-  const [kilos, setKilos] = useState('');
-  let detalle = [kilos, 'Kg de pan'];
+  const [vPan, setvPan] = useState('');
+  const [detalle, setDetalle] = useState(['', 'Kg de pan']);
 
   let pantalla = false;
 
-  if (kilos !== '') {
+  if (detalle[0] !== '') {
     pantalla = true;
   }
 
@@ -53,39 +53,33 @@ export default function suc() {
     setIsSelectedM(false);
   }
 
-  function agregarValor(e) {
+  async function agregarValor(e) {
     e.preventDefault();
-    if (kilos.length > 1) {
+    if (detalle[0].length > 1) {
       return;
     }
-    setKilos(kilos + e.target.value);
+    let copiaDetalle = detalle;
+    copiaDetalle[0] = copiaDetalle[0] + e.target.value;
+    setDetalle(copiaDetalle);
+    setvPan(detalle.join(' '));
   }
 
   function agregarValorExtra(e) {
     e.preventDefault();
     if (detalle.find((c) => c === e.target.value)) {
-        return;
+      return;
     }
-    detalle.push(e.target.value);
-    console.log(detalle)
+    let copiaDetalle = detalle;
+    copiaDetalle.push(e.target.value);
+    setDetalle(copiaDetalle);
+    setvPan(detalle.join(' '));
   }
 
   function del(e) {
     e.preventDefault();
-    setKilos('');
-    detalle.slice(0,1);
+    setDetalle(['', 'Kg de pan']);
+    detalle.slice(0, 1);
   }
-
-  let vPan = ''
-
-  function valorPantalla() {
-    detalle.map((d) => {
-        vPan = vPan + d
-        return vPan;
-    })
-  }
-
-  valorPantalla();
 
   return (
     <Layout>
@@ -184,13 +178,25 @@ export default function suc() {
                 </button>
               </div>
               <div className='bg-dark w-50 d-grid'>
-                <button value='R' onClick={agregarValorExtra} className='btn btn-sm btn-success mt-1'>
+                <button
+                  value='R'
+                  onClick={agregarValorExtra}
+                  className='btn btn-sm btn-success mt-1'
+                >
                   R
                 </button>
-                <button value='C' onClick={agregarValorExtra} className='btn btn-sm btn-success my-2'>
+                <button
+                  value='C'
+                  onClick={agregarValorExtra}
+                  className='btn btn-sm btn-success my-2'
+                >
                   C
                 </button>
-                <button value='F' onClick={agregarValorExtra} className='btn btn-sm btn-success mb-1'>
+                <button
+                  value='F'
+                  onClick={agregarValorExtra}
+                  className='btn btn-sm btn-success mb-1'
+                >
                   F
                 </button>
               </div>
