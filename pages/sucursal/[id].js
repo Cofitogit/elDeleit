@@ -74,6 +74,9 @@ export default function suc() {
   }
 
   function agregarValorI(e) {
+    if(inputValor.length > 5) {
+      return;
+    }
     setInputValor(inputValor + e.target.value);
   }
 
