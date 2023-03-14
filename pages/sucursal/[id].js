@@ -174,11 +174,11 @@ export default function suc() {
         </button>
       </div>
       <div
-        className='bg-dark mx-auto mt-2 border border-success border-2'
+        className='bg-dark mx-auto mt-2'
         style={{ height: '290px', width: '300px' }}
       >
         <div
-          className='display-absolute bg-success'
+          className='display-absolute bg-success border border-success'
           style={{
             height: '100%',
             width: '100%',
@@ -299,7 +299,7 @@ export default function suc() {
           </div>
         </div>
         <div
-          className='display-absolute bg-success'
+          className='display-absolute bg-success border border-success'
           style={{
             height: '100%',
             width: '100%',
@@ -398,7 +398,7 @@ export default function suc() {
           </div>
         </div>
         <div
-          className='display-absolute bg-dark border border-dark border-2'
+          className='display-absolute bg-dark border border-success'
           style={{
             width: '100%',
             display: visibleF ? 'block' : 'none',
@@ -409,16 +409,16 @@ export default function suc() {
               <div className='input-group'>
                 <input
                   type='text'
-                  className='form-control'
+                  className='text-center w-50 fw-bold fs-4 bg-secondary text-light'
                   value={fecha}
                   readOnly
                 />
                 <div className='input-group-append'>
-                  <button className='btn btn-success' onClick={subirDia}>
-                    +
+                  <button className='btn btn-success ms-4' onClick={subirDia}>
+                    <h5 className='px-1'>+</h5>
                   </button>
-                  <button className='btn btn-danger' onClick={bajarDia}>
-                    -
+                  <button className='btn btn-danger ms-2' onClick={bajarDia}>
+                    <h5 className='px-1'>-</h5>
                   </button>
                 </div>
               </div>
@@ -494,7 +494,7 @@ export default function suc() {
                 selectedButton}
             </h3>
           </div>
-          <div className='d-flex justify-content-center mt-2'>
+          <div className='d-flex justify-content-center my-2'>
             <button onClick={enviarTicket} className='btn btn-success'>
               GUARDAR
             </button>
