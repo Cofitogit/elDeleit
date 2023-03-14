@@ -9,10 +9,10 @@ export default function suc() {
   const [visibleD, setVisibleD] = useState(false);
   const [visibleI, setVisibleI] = useState(false);
   const [visibleF, setVisibleF] = useState(false);
-  const [isSelectedM, setIsSelectedM] = useState(false);
-  const [isSelectedT, setIsSelectedT] = useState(false);
+  const [selectedButton, setSelectedButton] = useState('');
   const [vPan, setvPan] = useState('');
   const [detalle, setDetalle] = useState(['', 'Kg de pan']);
+  const [inputValor, setInputValor] = useState('$');
 
   let pantalla = false;
 
@@ -41,27 +41,15 @@ export default function suc() {
     setVisibleF(false);
   }
 
-  function selectedM(e) {
-    e.preventDefault();
-    setIsSelectedM(!isSelectedM);
-    setIsSelectedT(false);
-  }
-
-  function selectedT(e) {
-    e.preventDefault();
-    setIsSelectedT(!isSelectedT);
-    setIsSelectedM(false);
-  }
-
-  async function agregarValor(e) {
+  function agregarValor(e) {
     e.preventDefault();
     if (detalle[0].length > 1) {
       return;
     }
-    let copiaDetalle = detalle;
+    const copiaDetalle = [...detalle];
     copiaDetalle[0] = copiaDetalle[0] + e.target.value;
     setDetalle(copiaDetalle);
-    setvPan(detalle.join(' '));
+    setvPan(copiaDetalle.join(' '));
   }
 
   function agregarValorExtra(e) {
@@ -69,17 +57,57 @@ export default function suc() {
     if (detalle.find((c) => c === e.target.value)) {
       return;
     }
-    let copiaDetalle = detalle;
+    const copiaDetalle = [...detalle];
     copiaDetalle.push(e.target.value);
     setDetalle(copiaDetalle);
-    setvPan(detalle.join(' '));
+    setvPan(copiaDetalle.join(' '));
   }
 
   function del(e) {
     e.preventDefault();
     setDetalle(['', 'Kg de pan']);
-    detalle.slice(0, 1);
   }
+
+  function delI(e) {
+    e.preventDefault();
+    setInputValor('$');
+  }
+
+  function agregarValorI(e) {
+    setInputValor(inputValor + e.target.value);
+  }
+
+  const [fecha, setFecha] = useState('');
+  const [dia, setDia] = useState(0);
+
+  useEffect(() => {
+    const fechaActual = new Date();
+    const diaActual = fechaActual.getDate();
+    const mesActual = fechaActual.getMonth() + 1;
+    const anioActual = fechaActual.getFullYear();
+    setFecha(`${diaActual}/${mesActual}/${anioActual}`);
+    setDia(diaActual);
+  }, []);
+
+  const subirDia = () => {
+    const fechaActualizada = new Date();
+    fechaActualizada.setDate(dia + 1);
+    const diaNuevo = fechaActualizada.getDate();
+    const mesNuevo = fechaActualizada.getMonth() + 1;
+    const anioNuevo = fechaActualizada.getFullYear();
+    setFecha(`${diaNuevo}/${mesNuevo}/${anioNuevo}`);
+    setDia(diaNuevo);
+  };
+
+  const bajarDia = () => {
+    const fechaActualizada = new Date();
+    fechaActualizada.setDate(dia - 1);
+    const diaNuevo = fechaActualizada.getDate();
+    const mesNuevo = fechaActualizada.getMonth() + 1;
+    const anioNuevo = fechaActualizada.getFullYear();
+    setFecha(`${diaNuevo}/${mesNuevo}/${anioNuevo}`);
+    setDia(diaNuevo);
+  };
 
   return (
     <Layout>
@@ -91,15 +119,15 @@ export default function suc() {
       <div className='card-body mt-2 d-flex justify-content-center'>
         <button
           className='btn btn-secondary rounded-0 rounded-start border-end border-dark'
-          onClick={selectedM}
-          style={{ opacity: isSelectedM ? 1 : 0.2 }}
+          onClick={() => setSelectedButton('mañana')}
+          style={{ opacity: selectedButton === 'mañana' ? 1 : 0.2 }}
         >
           Mañana
         </button>
         <button
           className='btn btn-secondary rounded-0 rounded-end border-start border-dark'
-          onClick={selectedT}
-          style={{ opacity: isSelectedT ? 1 : 0.2 }}
+          onClick={() => setSelectedButton('tarde')}
+          style={{ opacity: selectedButton === 'tarde' ? 1 : 0.2 }}
         >
           Tarde
         </button>
@@ -241,21 +269,143 @@ export default function suc() {
           </div>
         </div>
         <div
-          className='display-absolute bg-info'
-          style={{
-            height: '100%',
-            width: '100%',
-            display: visibleF ? 'block' : 'none',
-          }}
-        ></div>
-        <div
-          className='display-absolute bg-primary'
+          className='display-absolute bg-success'
           style={{
             height: '100%',
             width: '100%',
             display: visibleI ? 'block' : 'none',
           }}
-        ></div>
+        >
+          <div
+            className='card-body w-100 bg-dark d-flex justify-content-between'
+            style={{ height: '45px' }}
+          >
+            <h5 className='text-light ms-1 pt-2 fw-lighter'>{inputValor}</h5>
+            <button onClick={delI} className='btn btn-dark my-1'>
+              <i className='bi bi-arrow-left'></i>
+            </button>
+          </div>
+          <div className='container d-flex justify-content-around'>
+            <div className='mt-2'>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='1'
+                onClick={agregarValorI}
+              >
+                1
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='2'
+                onClick={agregarValorI}
+              >
+                2
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='3'
+                onClick={agregarValorI}
+              >
+                3
+              </button>
+            </div>
+            <div className='mt-2'>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='4'
+                onClick={agregarValorI}
+              >
+                4
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='5'
+                onClick={agregarValorI}
+              >
+                5
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='6'
+                onClick={agregarValorI}
+              >
+                6
+              </button>
+            </div>
+            <div className='mt-2'>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='7'
+                onClick={agregarValorI}
+              >
+                7
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='8'
+                onClick={agregarValorI}
+              >
+                8
+              </button>
+              <button
+                className='btn btn-dark rounded w-100 my-2'
+                value='9'
+                onClick={agregarValorI}
+              >
+                9
+              </button>
+            </div>
+          </div>
+
+          <div className='d-flex justify-content-center'>
+            <button
+              className='btn btn-dark rounded mx-3 w-75'
+              value='0'
+              onClick={agregarValorI}
+            >
+              0
+            </button>
+          </div>
+        </div>
+        <div
+          className='display-absolute bg-dark border border-dark border-2'
+          style={{
+            width: '100%',
+            display: visibleF ? 'block' : 'none',
+          }}
+        >
+          <div className='card bg-dark'>
+            <div className='card-body my-2'>
+              <div className='input-group'>
+                <input
+                  type='text'
+                  className='form-control'
+                  value={fecha}
+                  readOnly
+                />
+                <div className='input-group-append'>
+                  <button className='btn btn-success' onClick={subirDia}>
+                    +
+                  </button>
+                  <button className='btn btn-danger' onClick={bajarDia}>
+                    -
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='card-body bg-dark border-bottom border-top border-light rounded mx-3 mt-1'>
+            <h3 className='text-light text-center ms-1 pt-2 fw-lighter'>
+              Detalles del TICKET:
+            </h3>
+            <h3 className='text-light text-center ms-1'>
+              {detalle.join(' ') + ' ' + inputValor + ' ' + fecha + ' ' + selectedButton}
+            </h3>
+          </div>
+          <div className='d-flex justify-content-center mt-2'>
+            <button className='btn btn-success'>GUARDAR</button>
+          </div>
+        </div>
       </div>
     </Layout>
   );
