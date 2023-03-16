@@ -1,8 +1,12 @@
+import axios from 'axios';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect, useState } from 'react';
+import Detalle from '../../components/Detalle';
+import Importe from '../../components/Importe';
 import Layout from '../../components/Layout';
 import { sucursal } from '../../data';
+import { useBookStore } from '../../src/store/bookStore';
 
 export default function suc() {
   const router = useRouter();
@@ -11,77 +15,30 @@ export default function suc() {
   const [visibleI, setVisibleI] = useState(false);
   const [visibleF, setVisibleF] = useState(false);
   const [selectedButton, setSelectedButton] = useState('');
-  const [vPan, setvPan] = useState('');
-  const [detalle, setDetalle] = useState(['', 'Kg de pan']);
-  const [inputValor, setInputValor] = useState('$');
   const [ticketIncomplete, setTicketIncomplete] = useState([]);
   const [ticketSave, setTicketSave] = useState(false);
   const [ticketUnsave, setTicketUnsave] = useState(false);
+  const detalle = useBookStore((s) => s.finalD);
+  const inputValor = useBookStore((s) => s.finalI)
 
-  let pantalla = false;
-
-  if (detalle[0] !== '') {
-    pantalla = true;
-  }
-
-  function handleD(e) {
-    e.preventDefault();
-    setVisibleD(!visibleD);
-    setVisibleF(false);
-    setVisibleI(false);
-  }
-
-  function handleF(e) {
-    e.preventDefault();
-    setVisibleF(!visibleF);
-    setVisibleD(false);
-    setVisibleI(false);
-  }
-
-  function handleI(e) {
-    e.preventDefault();
-    setVisibleI(!visibleI);
-    setVisibleD(false);
-    setVisibleF(false);
-  }
-
-  function agregarValor(e) {
-    e.preventDefault();
-    if (detalle[0].length > 1) {
-      return;
+  function onOff(e) {
+    switch (e.target.value) {
+      case 'detalle':
+        setVisibleD(!visibleD);
+        setVisibleF(false);
+        setVisibleI(false);
+        break;
+        case 'importe':
+          setVisibleI(!visibleI);
+          setVisibleD(false);
+          setVisibleF(false);
+          break;
+        case 'fecha':
+          setVisibleF(!visibleF);
+          setVisibleD(false);
+          setVisibleI(false);
+          break;
     }
-    const copiaDetalle = [...detalle];
-    copiaDetalle[0] = copiaDetalle[0] + e.target.value;
-    setDetalle(copiaDetalle);
-    setvPan(copiaDetalle.join(' '));
-  }
-
-  function agregarValorExtra(e) {
-    e.preventDefault();
-    if (detalle.find((c) => c === e.target.value)) {
-      return;
-    }
-    const copiaDetalle = [...detalle];
-    copiaDetalle.push(e.target.value);
-    setDetalle(copiaDetalle);
-    setvPan(copiaDetalle.join(' '));
-  }
-
-  function del(e) {
-    e.preventDefault();
-    setDetalle(['', 'Kg de pan']);
-  }
-
-  function delI(e) {
-    e.preventDefault();
-    setInputValor('$');
-  }
-
-  function agregarValorI(e) {
-    if (inputValor.length > 5) {
-      return;
-    }
-    setInputValor(inputValor + e.target.value);
   }
 
   const [fecha, setFecha] = useState('');
@@ -116,7 +73,20 @@ export default function suc() {
     setDia(diaNuevo);
   };
 
-  function enviarTicket() {
+  function updateDetalle(detalleF) {
+    return detalleF.map((item) => {
+      if (item === "R") {
+        return "+ rallado";
+      } else if (item === "F") {
+        return "+ facturas";
+      } else if (item === "C") {
+        return "+ criollos";
+      }
+      return item;
+    });
+  }
+
+  async function enviarTicket() {
     let vacio = [];
 
     if (detalle[0] === '') {
@@ -135,6 +105,15 @@ export default function suc() {
       setTicketIncomplete(vacio);
       return setTicketUnsave(true);
     } else {
+      let finalImp = Number(inputValor.slice(1, inputValor.length))
+      const updatedDetalle = updateDetalle(detalle);
+      const res = await axios.post('/api/tickets', {
+        name: sucursal[id],
+        importe: finalImp,
+        turno: selectedButton,
+        fecha: fecha,
+        detalle: updatedDetalle.join(' ')
+      })
       return setTicketSave(true);
     }
   }
@@ -163,13 +142,13 @@ export default function suc() {
         </button>
       </div>
       <div className='card-body bg-secondary d-flex justify-content-around mt-2'>
-        <button className='btn btn-success rounded-0' onClick={handleD}>
+        <button className='btn btn-success rounded-0' value='detalle' onClick={onOff}>
           DETALLE
         </button>
-        <button className='btn btn-success rounded-0' onClick={handleI}>
+        <button className='btn btn-success rounded-0' value='importe' onClick={onOff}>
           IMPORTE
         </button>
-        <button className='btn btn-success rounded-0' onClick={handleF}>
+        <button className='btn btn-success rounded-0' value='fecha' onClick={onOff}>
           FECHA
         </button>
       </div>
@@ -177,226 +156,8 @@ export default function suc() {
         className='bg-dark mx-auto mt-2'
         style={{ height: '290px', width: '300px' }}
       >
-        <div
-          className='display-absolute bg-success border border-success'
-          style={{
-            height: '100%',
-            width: '100%',
-            display: visibleD ? 'block' : 'none',
-          }}
-        >
-          <div
-            className='card-body w-100 bg-dark d-flex justify-content-between'
-            style={{ height: '45px' }}
-          >
-            <h5 className='text-light ms-1 pt-2 fw-lighter'>
-              {pantalla ? vPan : ''}
-            </h5>
-            <button onClick={del} className='btn btn-dark my-1'>
-              <i className='bi bi-arrow-left'></i>
-            </button>
-          </div>
-          <div className='container'>
-            <div className='row mt-1'>
-              <div className='bg-success d-grid justify-content-center w-25'>
-                <button
-                  onClick={agregarValor}
-                  value='1'
-                  className='btn btn-dark rounded m-1'
-                >
-                  1
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='2'
-                  className='btn btn-dark rounded m-1'
-                >
-                  2
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='3'
-                  className='btn btn-dark rounded m-1'
-                >
-                  3
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='4'
-                  className='btn btn-dark rounded m-1'
-                >
-                  4
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='5'
-                  className='btn btn-dark rounded m-1'
-                >
-                  5
-                </button>
-              </div>
-              <div className='bg-dark w-50 d-grid'>
-                <button
-                  value='R'
-                  onClick={agregarValorExtra}
-                  className='btn btn-sm btn-success mt-1'
-                >
-                  R
-                </button>
-                <button
-                  value='C'
-                  onClick={agregarValorExtra}
-                  className='btn btn-sm btn-success my-2'
-                >
-                  C
-                </button>
-                <button
-                  value='F'
-                  onClick={agregarValorExtra}
-                  className='btn btn-sm btn-success mb-1'
-                >
-                  F
-                </button>
-              </div>
-              <div className='bg-success d-grid justify-content-center w-25'>
-                <button
-                  onClick={agregarValor}
-                  value='6'
-                  className='btn btn-dark rounded m-1'
-                >
-                  6
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='7'
-                  className='btn btn-dark rounded m-1'
-                >
-                  7
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='8'
-                  className='btn btn-dark rounded m-1'
-                >
-                  8
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='9'
-                  className='btn btn-dark rounded m-1'
-                >
-                  9
-                </button>
-                <button
-                  onClick={agregarValor}
-                  value='0'
-                  className='btn btn-dark rounded m-1'
-                >
-                  0
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          className='display-absolute bg-success border border-success'
-          style={{
-            height: '100%',
-            width: '100%',
-            display: visibleI ? 'block' : 'none',
-          }}
-        >
-          <div
-            className='card-body w-100 bg-dark d-flex justify-content-between'
-            style={{ height: '45px' }}
-          >
-            <h5 className='text-light ms-1 pt-2 fw-lighter'>{inputValor}</h5>
-            <button onClick={delI} className='btn btn-dark my-1'>
-              <i className='bi bi-arrow-left'></i>
-            </button>
-          </div>
-          <div className='container d-flex justify-content-around'>
-            <div className='mt-2'>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='1'
-                onClick={agregarValorI}
-              >
-                1
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='4'
-                onClick={agregarValorI}
-              >
-                4
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='7'
-                onClick={agregarValorI}
-              >
-                7
-              </button>
-            </div>
-            <div className='mt-2'>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='2'
-                onClick={agregarValorI}
-              >
-                2
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='5'
-                onClick={agregarValorI}
-              >
-                5
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='8'
-                onClick={agregarValorI}
-              >
-                8
-              </button>
-            </div>
-            <div className='mt-2'>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='3'
-                onClick={agregarValorI}
-              >
-                3
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='6'
-                onClick={agregarValorI}
-              >
-                6
-              </button>
-              <button
-                className='btn btn-dark rounded w-100 my-2'
-                value='9'
-                onClick={agregarValorI}
-              >
-                9
-              </button>
-            </div>
-          </div>
-
-          <div className='d-flex justify-content-center'>
-            <button
-              className='btn btn-dark rounded mx-3 w-75'
-              value='0'
-              onClick={agregarValorI}
-            >
-              0
-            </button>
-          </div>
-        </div>
+        <Detalle visibleD={visibleD} />
+        <Importe visibleI={visibleI} />
         <div
           className='display-absolute bg-dark border border-success'
           style={{
@@ -432,7 +193,7 @@ export default function suc() {
               transform: 'translate(-50%, -50%)',
               display: ticketUnsave ? 'block' : 'none',
               zIndex: 2,
-              width: '100%'
+              width: '100%',
             }}
           >
             <div
@@ -446,8 +207,13 @@ export default function suc() {
                   ))}
                 </ul>
               </h5>
-              <div className="d-flex justify-content-center mb-2">
-                <button onClick={() => setTicketUnsave(false)} className='btn btn-outline-danger'>X</button>
+              <div className='d-flex justify-content-center mb-2'>
+                <button
+                  onClick={() => setTicketUnsave(false)}
+                  className='btn btn-outline-danger'
+                >
+                  X
+                </button>
               </div>
             </div>
           </div>
