@@ -8,7 +8,7 @@ CREATE TABLE ticket (
     importe INT,
     detalle VARCHAR(400) NOT NULL,
     createdAT TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    turno VARCHAR(20)
+    turno VARCHAR(20),
     fecha VARCHAR(29)
 );
 
