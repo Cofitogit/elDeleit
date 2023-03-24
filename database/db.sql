@@ -2,7 +2,7 @@ CREATE DATABASE ticketsdb;
 
 use ticketsdb;
 
-CREATE TABLE ticket (
+CREATE TABLE ticketsave (
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     importe INT,
